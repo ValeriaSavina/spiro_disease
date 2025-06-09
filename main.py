@@ -31,6 +31,31 @@ def predictDisease(org, sex,age,height,weight,IMT,waist,smoke_index,CHSS,ADS,ADD
     return model.predict(data)
 
 
+def calculate_bmi(weight, height):
+    if pd.isna(weight) or pd.isna(height):
+        return None
+    try:
+        return round(weight / (height / 100) ** 2, 2)
+    except ZeroDivisionError:
+        print(f"Ошибка: Рост равен 0 для строки {weight}, {height}")
+        return None
+
+def classify_bmi(bmi_value):
+    if bmi_value is None:
+        return 'Недопределено'
+    elif bmi_value < 18.5:
+        return 'Недостаточный'
+    elif bmi_value < 25:
+        return 'Нормальный'
+    elif bmi_value < 30:
+        return 'Избыточный вес'
+    elif bmi_value < 35:
+        return 'Ожирение I степени'
+    elif bmi_value < 40:
+        return 'Ожирение II степени'
+    else:
+        return 'Ожирение III степени'
+
 def load_model():
     spiro = pd.read_excel('spiro.xlsx')
     spiro_clear = spiro.drop(
@@ -59,7 +84,7 @@ def load_model():
 
 model = load_model()
 
-st.title('Прогнозирование')
+st.title('Прогнозирование наличия бронхолёгочных патологий')
 
 st.subheader("Введите Ваши данные")
 org_dict = ['ЕПК',
@@ -74,18 +99,46 @@ sex = st.selectbox('Пол', sex_options)
 age = st.number_input('Возраст')
 height = st.number_input('Рост, см')
 weight = st.number_input('Вес, кг')
-IMT = st.number_input('ИМТ')
+
+col1, col2 = st.columns(2)
+with col1:
+    weight_input = st.number_input('Вес (кг)', min_value=0.0, value=70.0, step=0.1)
+with col2:
+    height_input = st.number_input('Рост (см)', min_value=50.0, max_value=250.0, value=170.0, step=1.0)
+
+
+# Кнопка для расчета ИМТ
+calculate_button = st.button('Рассчитать ИМТ')
+
+if calculate_button:
+    bmi_result = calculate_bmi(weight_input, height_input)
+
+    if bmi_result is None:
+        st.error("Не удалось рассчитать ИМТ. Проверьте введенные данные.")
+    else:
+        st.write(f"Ваш ИМТ: {bmi_result:.2f}")
+
+    # Отображаем классификацию по ИМТ
+    classification = classify_bmi(bmi_result)
+    imt = classification
+    bmi = bmi_result
+    st.write(f"Классификация: {classification}")
+
+st.subheader("Введите Ваши данные последнего физикального обследования:")
+
 waist = st.number_input('Обх.талии, см')
-smoke_index = st.number_input('Индекс курения')
+smoke_index = st.number_input('Индекс курения (можно расчитать на любом сайте с калькулятором индекса курения)')
 CHSS = st.number_input('ЧСС (уд/мин.)')
 ADS = st.number_input('АДС(мм рт. ст)')
 ADD = st.number_input('АДД(мм рт. ст)')
 respiratory_rate = st.number_input('Частота дыхательных движений')
 breath_holding = st.number_input('Задержка дыхания после глубокого вдоха')
 exp = st.number_input('Стаж (количество лет)')
-chemical_factor = st.number_input('Химический фактор')
-dust = st.number_input('Пыль')
-work_difficult = st.number_input('Тяжесть трудового процесса')
+chemical_factor = st.checkbox('Химический фактор')
+dust = st.checkbox('Пыль')
+work_difficult = st.checkbox('Тяжесть трудового процесса')
+
+st.subheader("Введите Ваши параметры биохимического анализа крови:")
 
 ALT = st.number_input('АЛТ, 1/л')
 AST = st.number_input('АСТ, 1/л')
@@ -121,13 +174,17 @@ if done:
     else:
         org_value = 4
 
+    res_chemical_factor = 1 if chemical_factor else 0
+    res_dust = 1 if dust else 0
+    res_work_difficult = 1 if work_difficult else 0
 
 
-    result = predictProba(org_value, sex_value, age, height, weight, IMT, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
+
+    result = predictProba(org_value, sex_value, age, height, weight, imt, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
                      breath_holding, exp,  chemical_factor, dust, work_difficult, ALT, AST, total_bilirubin, direct_bilirubin,
                      glucose, creatinine, LLPN, uric_acid, triglycerides, total_cholesterol, alkaline_phosphatase, gamma_glutamyl, atherogenicity_index)
 
-    rec = predictDisease(org_value, sex_value, age, height, weight, IMT, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
+    rec = predictDisease(org_value, sex_value, age, height, weight, imt, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
                        breath_holding, exp,chemical_factor, dust, work_difficult, ALT, AST, total_bilirubin, direct_bilirubin,
                        glucose, creatinine,LLPN, uric_acid, triglycerides, total_cholesterol, alkaline_phosphatase, gamma_glutamyl,
                        atherogenicity_index)
@@ -135,7 +192,7 @@ if done:
         st.error("Не удалось рассчитать.")
     else:
         if rec == 1:
-            rec_value = 'Есть риск нарушения слуха! Рекомендуется немедленное посещение врача'
+            rec_value = 'Есть вероятность наличия бронхолёгочной патологии. Необходимо проконсультироваться со специалистом!'
         else:
-            rec_value = 'Риск потери слуха маловероятен'
+            rec_value = 'Риск бронхолёгочной патологии маловероятен.'
         st.text(rec_value)
