@@ -13,19 +13,19 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 
 
-def predictProba(org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+def predictProba(org, sex,age,height_input,weight_input,bmi,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index):
-    data = np.array([[org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+    data = np.array([[org, sex,age,height_input,weight_input,bmi,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index]])
     return model.predict_proba(data)
 
 
-def predictDisease(org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+def predictDisease(org, sex,age,height_input,weight_input,bmi,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index):
-    data = np.array([[org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+    data = np.array([[org, sex,age,height_input,weight_input,bmi,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index]])
     return model.predict(data)
@@ -97,8 +97,8 @@ sex_options = ['жен', 'муж']
 sex = st.selectbox('Пол', sex_options)
 
 age = st.number_input('Возраст')
-height = st.number_input('Рост, см')
-weight = st.number_input('Вес, кг')
+bmi = 0
+imt = ""
 
 col1, col2 = st.columns(2)
 with col1:
@@ -134,6 +134,9 @@ ADD = st.number_input('АДД(мм рт. ст)')
 respiratory_rate = st.number_input('Частота дыхательных движений')
 breath_holding = st.number_input('Задержка дыхания после глубокого вдоха')
 exp = st.number_input('Стаж (количество лет)')
+
+st.subheader("Укажите наличие следующих рабочих факторов:")
+
 chemical_factor = st.checkbox('Химический фактор')
 dust = st.checkbox('Пыль')
 work_difficult = st.checkbox('Тяжесть трудового процесса')
@@ -180,11 +183,11 @@ if done:
 
 
 
-    result = predictProba(org_value, sex_value, age, height, weight, imt, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
+    result = predictProba(org_value, sex_value, age, height_input,weight_input,bmi, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
                      breath_holding, exp,  chemical_factor, dust, work_difficult, ALT, AST, total_bilirubin, direct_bilirubin,
                      glucose, creatinine, LLPN, uric_acid, triglycerides, total_cholesterol, alkaline_phosphatase, gamma_glutamyl, atherogenicity_index)
 
-    rec = predictDisease(org_value, sex_value, age, height, weight, imt, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
+    rec = predictDisease(org_value, sex_value, age, height_input,weight_input,bmi, waist, smoke_index, CHSS, ADS, ADD, respiratory_rate,
                        breath_holding, exp,chemical_factor, dust, work_difficult, ALT, AST, total_bilirubin, direct_bilirubin,
                        glucose, creatinine,LLPN, uric_acid, triglycerides, total_cholesterol, alkaline_phosphatase, gamma_glutamyl,
                        atherogenicity_index)
