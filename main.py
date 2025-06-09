@@ -13,19 +13,19 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 
 
-def predictProba(org, sex,age,height,weight,IMT,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+def predictProba(org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index):
-    data = np.array([[org, sex,age,height,weight,IMT,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+    data = np.array([[org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index]])
     return model.predict_proba(data)
 
 
-def predictDisease(org, sex,age,height,weight,IMT,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+def predictDisease(org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index):
-    data = np.array([[org, sex,age,height,weight,IMT,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
+    data = np.array([[org, sex,age,height,weight,imt,waist,smoke_index,CHSS,ADS,ADD,respiratory_rate,breath_holding ,exp,
                  chemical_factor,dust,work_difficult ,ALT ,AST,total_bilirubin ,direct_bilirubin ,glucose ,creatinine,
                  LLPN ,uric_acid ,triglycerides ,total_cholesterol ,alkaline_phosphatase ,gamma_glutamyl ,atherogenicity_index]])
     return model.predict(data)
